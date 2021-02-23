@@ -4,7 +4,6 @@
 #include <fstream>
 
 using namespace std;
-
 typedef enum nodeType {
 	NT_COMPILEUNIT, NT_STATEMENTS, NT_STATEMENT,
 	NT_EXPRESSION_NUMBER, NT_EXPRESSION_ADDITION,

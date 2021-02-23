@@ -41,7 +41,6 @@ expression : NUMBER
 			| '(' expression ')'		{ $$ = $2; }
 			;
 
-
 %%
  namespace yy{
 	 void parser::error (const location_type& loc, const std::string& msg){

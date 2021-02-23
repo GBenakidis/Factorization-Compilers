@@ -448,7 +448,7 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "Grammar.l"
-#line 4 "Grammar.l"
+#line 3 "Grammar.l"
 #include "SymbolNodes.h"
 #include "Grammar.tab.h"
 #define YY_DECL int yylex(yy::parser::semantic_type *yylval)
@@ -669,7 +669,7 @@ YY_DECL
 		}
 
 	{
-#line 13 "Grammar.l"
+#line 10 "Grammar.l"
 
 
 #line 675 "Grammar.flex.cpp"
@@ -731,44 +731,44 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "Grammar.l"
+#line 12 "Grammar.l"
 { return ';'; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "Grammar.l"
+#line 13 "Grammar.l"
 { return '+'; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "Grammar.l"
+#line 14 "Grammar.l"
 { return '-'; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "Grammar.l"
+#line 15 "Grammar.l"
 { return '*'; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "Grammar.l"
+#line 16 "Grammar.l"
 { return '/'; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 21 "Grammar.l"
+#line 18 "Grammar.l"
 {   yylval->node = new CNUMBER(yytext);
 					return token::NUMBER; }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 25 "Grammar.l"
+#line 21 "Grammar.l"
 ;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 27 "Grammar.l"
+#line 23 "Grammar.l"
 ECHO;
 	YY_BREAK
 #line 774 "Grammar.flex.cpp"
@@ -1776,8 +1776,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 27 "Grammar.l"
-
-
-
+#line 23 "Grammar.l"
 
