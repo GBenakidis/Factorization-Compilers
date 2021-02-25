@@ -1,6 +1,5 @@
 %verbose
 %language "C++"
-
 %{
 #include "Grammar.tab.h"
 #include "SymbolNodes.h"
@@ -15,7 +14,7 @@ extern int yylex(yy::parser::semantic_type *yylval);
 }
 
 %start compileUnit
-%token <node> NUMBER
+%token <node> NUMBER IDENTIFIER
 %left '+' '-'
 %left '*' '/'
 %type <node> expression compileUnit statements statement
@@ -34,6 +33,8 @@ statement : expression ';'		 { $$ = new CStatement(); $$->AddChild($1); }
 		;
 
 expression : NUMBER
+			| IDENTIFIER
+			| IDENTIFIER '=' expression { $$ = new CAssignment(); $$->AddChild($1); $$->AddChild($3); }
 			| expression '+' expression { $$ = new CAddition(); $$->AddChild($1); $$->AddChild($3); }
 			| expression '-' expression { $$ = new CSubtraction(); $$->AddChild($1); $$->AddChild($3); }
 			| expression '*' expression { $$ = new CMultiplication(); $$->AddChild($1); $$->AddChild($3); }

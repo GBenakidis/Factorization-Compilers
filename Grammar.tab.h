@@ -42,7 +42,7 @@
 
 /* "%code requires" blocks.  */
 /* Line 33 of lalr1.cc  */
-#line 10 "Grammar.y"
+#line 9 "Grammar.y"
  
 #include "STNode.h"
 
@@ -75,7 +75,7 @@ namespace yy {
     union semantic_type
     {
 /* Line 33 of lalr1.cc  */
-#line 13 "Grammar.y"
+#line 12 "Grammar.y"
 
 	STNode *node; 
 
@@ -93,7 +93,8 @@ namespace yy {
     {
       /* Tokens.  */
    enum yytokentype {
-     NUMBER = 258
+     NUMBER = 258,
+     IDENTIFIER = 259
    };
 
     };
@@ -266,7 +267,7 @@ namespace yy {
 
 } // yy
 /* Line 33 of lalr1.cc  */
-#line 270 "Grammar.tab.h"
+#line 271 "Grammar.tab.h"
 
 
 

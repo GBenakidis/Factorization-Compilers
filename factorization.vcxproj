@@ -151,6 +151,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="STNode.cpp" />
     <ClCompile Include="SymbolNodes.cpp" />
+    <ClCompile Include="SymbolTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Grammar.tab.h" />
@@ -159,12 +160,16 @@
     <ClInclude Include="stack.hh" />
     <ClInclude Include="STNode.h" />
     <ClInclude Include="SymbolNodes.h" />
+    <ClInclude Include="SymbolTable.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="stree.dot.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="stree.dot" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

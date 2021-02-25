@@ -40,6 +40,9 @@
     <ClCompile Include="SymbolNodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SymbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Grammar.tab.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="SymbolNodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SymbolTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
@@ -68,5 +74,8 @@
     <Image Include="stree.dot.gif">
       <Filter>Grammar Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="stree.dot" />
   </ItemGroup>
 </Project>
