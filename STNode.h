@@ -24,7 +24,9 @@ public:
 	void AddChild(STNode* node);
 
 	virtual void Visit_SyntaxTreePrinter(ofstream* dotfile, STNode* parent);
-	
+
+	virtual list<STNode*> SearchingAddition(list<STNode*>);
+
 	virtual int Visit_Eval();
 
 protected:
@@ -36,5 +38,6 @@ protected:
 	list<STNode*>* m_parents;
 
 };
+
 
 extern STNode* g_root; //dilwsi

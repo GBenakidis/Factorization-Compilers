@@ -1,7 +1,7 @@
 #pragma once
 #include "SymbolNodes.h"
-#include <iostream>
 #include "SymbolTable.h"
+#include <iostream>
 
 // ======== ILOPOIHSEIS METHODWN ========
 
@@ -26,11 +26,13 @@ CMultiplication::~CMultiplication() {}
 CDivision::CDivision(): STNode(NodeType::NT_EXPRESSION_DIVISION) {}
 CDivision::~CDivision() {}
 
+CAssignment::CAssignment() : STNode(NodeType::NT_EXPRESSION_ASSIGNMENT) {}
+CAssignment::~CAssignment() {}
+
 CNUMBER::CNUMBER(char *text): STNode(NodeType::NT_EXPRESSION_NUMBER) {
 
 	// --- Edw pairnoun times/onoma oi komboi me noumera ---
 
-	// metatrepoume text->akeraio
 	m_number = atoi(text);
 	// kai episinaptoume ton arirhmo kanontas ton string
 	// (text p fainetai panv ston kombo)
@@ -47,47 +49,19 @@ CIDENTIFIER::~CIDENTIFIER() {
 
 }
 
-int CIDENTIFIER::Visit_Eval() {
-	return GetInitValue(m_name);
-}
-
-CAssignment::CAssignment() : STNode(NodeType::NT_EXPRESSION_ASSIGNMENT) {}
-CAssignment::~CAssignment() {}
-
-int CAssignment::Visit_Eval() {
-	// prepei na ipologistei h ekfrasi pou brisketai sta aristera tis anathesis
-	// kai i timi tis na anatethei ston SymbolTable
-
-	// deixnei sto prwto stoixeio tis listas(prwto paidi) pou einai to identifier
-	list<STNode*>::iterator it = m_children->begin(); 
-
-	// to pairnoume to paidi kai to anathetoume se mia metabliti 
-	// tipou identifier wste na mporoume na prospelasoume ta pedia tis klasis
-	CIDENTIFIER* id = dynamic_cast<CIDENTIFIER*>(*it);
-
-	advance(it, 1);
-
-	// dinoume onoma metablitis kai ton arithmo pou prokiptei apo thigatrikous kombous
-	SetValue(id->m_name, (*it)->Visit_Eval());
-
-	// minima pou mas anaferei oti auti i metabliti tropopoihthike
-	cout << id->m_name << "=" << GetInitValue(id->m_name) << endl;
-
-	return GetInitValue(id->m_name);
-}
-
 void CCompileUnit::Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) {
 	list<STNode*>::iterator it;
 
 	// --- Edw dimiourgoume ta .dot --
 	// elegxoume an o kombos exei patera
+
 	if (parent == nullptr) {
 		(*dotFile) << "digraph G{ \n";
 		for (it = m_children->begin(); it != m_children->end(); it++) {
-			(*it)->Visit_SyntaxTreePrinter(dotFile,this); // edw mpainei stin STNode.cpp
+			(*it)->Visit_SyntaxTreePrinter(dotFile, this); // edw mpainei stin STNode.cpp
 		}
 		(*dotFile) << "}";
-		
+
 		//kleinoume to arxeio
 		dotFile->close();
 	}
@@ -99,17 +73,14 @@ void CCompileUnit::Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) {
 
 int CStatement::Visit_Eval() {
 	list<STNode*>::iterator it;
-
+	int nai;
 	// exei 2 enalaktikes alla pairnoume tin pliri ekfrasi pou einai h: " expression ';' "
 	if (m_children->size() != 0) { // elegxoume an i lista me ta paidia einai adeia
 		// ton iterator ton arxikopoioume sto prwto stoixeio tis listas
 		it = m_children->begin(); 
-		cout << "Result: " << (*it)->Visit_Eval() << endl;
+		nai = (*it)->Visit_Eval();
 	}
-	return 0;
-}
-int CNUMBER::Visit_Eval() {
-	return m_number;
+	return nai;
 }
 int CAddition::Visit_Eval() {
 	list<STNode*>::iterator it = m_children->begin();
@@ -151,3 +122,118 @@ int CDivision::Visit_Eval() {
 
 	return result; // epistrefoume tin timi ston gonea
 }
+int CAssignment::Visit_Eval() {
+	// prepei na ipologistei h ekfrasi pou brisketai sta aristera tis anathesis
+	// kai i timi tis na anatethei ston SymbolTable
+
+	// deixnei sto prwto stoixeio tis listas(prwto paidi) pou einai to identifier
+	list<STNode*>::iterator it = m_children->begin();
+
+	// to pairnoume to paidi kai to anathetoume se mia metabliti 
+	// tipou identifier wste na mporoume na prospelasoume ta pedia tis klasis
+	CIDENTIFIER* id = dynamic_cast<CIDENTIFIER*>(*it);
+
+	advance(it, 1);
+
+	// dinoume onoma metablitis kai ton arithmo pou prokiptei apo thigatrikous kombous
+	SetValue(id->m_name, (*it)->Visit_Eval());
+
+	// minima pou mas anaferei oti auti i metabliti tropopoihthike
+	cout << id->m_name << "=" << GetInitValue(id->m_name) << endl;
+
+	return GetInitValue(id->m_name);
+}
+
+int CNUMBER::Visit_Eval() {
+	return m_number;
+}
+int CIDENTIFIER::Visit_Eval() {
+	return GetInitValue(m_name);
+}
+
+
+list<STNode*> CStatement::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it;
+	list<STNode*> arr;
+	if (m_children->size() != 0) {
+		it = m_children->begin();
+		arr = (*it)->SearchingAddition(a);
+	}
+	return arr;
+}
+list<STNode*> CAddition::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<STNode*>::iterator par = m_parents ->begin();
+	list<STNode*>temp;
+
+	if((*par)->GetNodeType() != 2)
+		a.push_back(*par);
+
+	temp = (*it)->SearchingAddition(a);
+	
+	advance(it, 1);
+
+	temp = (*it)->SearchingAddition(temp);
+	
+	return temp;
+
+}
+list<STNode*> CSubtraction::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it = m_children->begin();
+	(*it)->SearchingAddition(a);
+
+	advance(it, 1);
+	(*it)->SearchingAddition(a); 
+
+	return a;
+}
+list<STNode*> CMultiplication::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<STNode*>::iterator par = m_parents->begin();
+	list<STNode*>temp;
+
+	bool brika_koino = false;
+	for (auto const& i : a) {
+		if (i->GetGraphvizLabel() == (*par)->GetGraphvizLabel()) {
+			brika_koino = true;
+		}
+	}
+	if(brika_koino==false)
+		a.push_back(*par);
+
+	temp = (*it)->SearchingAddition(a);
+
+	advance(it, 1);
+	temp = (*it)->SearchingAddition(a);
+
+	return temp;
+}
+list<STNode*> CDivision::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it = m_children->begin();
+	(*it)->SearchingAddition(a);
+
+	advance(it, 1);
+	(*it)->SearchingAddition(a);
+	return a;
+}
+list<STNode*> CAssignment::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it = m_children->begin();
+
+	CIDENTIFIER* id = dynamic_cast<CIDENTIFIER*>(*it);
+
+	advance(it, 1);
+
+	cout << id->m_name << "=" << GetInitValue(id->m_name) << endl;
+
+	return a;
+}
+
+list<STNode*> CNUMBER::SearchingAddition(list<STNode*> a) {
+	// return m_number;
+	return a;
+}
+list<STNode*> CIDENTIFIER::SearchingAddition(list<STNode*> a) {
+	// return GetInitValue(m_name);
+	return a;
+}
+

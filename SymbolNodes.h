@@ -2,7 +2,8 @@
 // periexei ton orismo tis gonikis klasis tou sintaktikou dentrou
 #include "STNode.h"
 
-//twra ftiaxnoume mia klasi gia kathe ksexwristo tipo kombou pou theloume na apikonistei sto sintaktiko dentro
+// twra ftiaxnoume mia klasi gia kathe ksexwristo tipo kombou 
+// pou theloume na apikonistei sto sintaktiko dentro
 
 class CCompileUnit : public STNode {
 public:
@@ -28,6 +29,7 @@ public:
 	virtual ~CStatement();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CAddition : public STNode {
@@ -36,6 +38,7 @@ public:
 	virtual ~CAddition();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CSubtraction : public STNode {
@@ -44,6 +47,7 @@ public:
 	virtual ~CSubtraction();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CDivision : public STNode {
@@ -52,6 +56,7 @@ public:
 	virtual ~CDivision();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CMultiplication : public STNode {
@@ -60,6 +65,7 @@ public:
 	virtual ~CMultiplication();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CNUMBER : public STNode {
@@ -72,6 +78,7 @@ public:
 	virtual ~CNUMBER();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CIDENTIFIER : public STNode {
@@ -82,6 +89,7 @@ public:
 	virtual ~CIDENTIFIER();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };
 
 class CAssignment : public STNode {
@@ -90,4 +98,5 @@ public:
 	virtual ~CAssignment();
 
 	int Visit_Eval() override;
+	list<STNode*> SearchingAddition(list<STNode*>) override;
 };

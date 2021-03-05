@@ -10,9 +10,8 @@ const char* g_nodeTypeLabels[] = {
 	"DIVISION", "ASSIGNMENT"
 };
 
-
 STNode::STNode(NodeType type) {
-	//afirimeni goniki klasi
+	// afirimeni goniki klasi
 
 	m_nodeType = type;
 	m_serial = m_serialCounter++;
@@ -76,13 +75,15 @@ void STNode::Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) {
 	// "\"" -> gia na egklioume tis akmes mesa se dipla eisagwgika giati dimioiurgountai parenergies otan iparxoyn mesa sta onoma twn kombwn
 	// "\"  -> gia na periklisoume me dipla eisagwgika to onoma tou komboy patera
 	// \""  -> gia to onoma tou trexonta kombou p akolouthei;
+	
+	// cout << parent->GetGraphvizLabel() << "\n";
 
 	(*dotFile) << "\"" << parent->GetGraphvizLabel() << "\"->\"" << GetGraphvizLabel() << "\";\n";
 
 	for (it = m_children->begin(); it != m_children->end(); it++) {
 		//den orizoume postorder action ektos apo tin riza
-
 		(*it)->Visit_SyntaxTreePrinter(dotFile, this);
+		
 	}
 }
 
@@ -92,10 +93,22 @@ int STNode::Visit_Eval() {
 	list<STNode*>::iterator it;
 
 	// diatrexei ta paidia tou komboy
+	int nai;
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		(*it)->Visit_Eval();
+		nai = (*it)->Visit_Eval();
 	}
-	return 0;
+	return nai;
+}
+
+list<STNode*> STNode::SearchingAddition(list<STNode*> a) {
+	list<STNode*>::iterator it;
+	list<STNode*> piip;
+
+	// diatrexei ta paidia tou komboy
+	for (it = m_children->begin(); it != m_children->end(); it++) {
+		piip=(*it)->SearchingAddition(a);
+	}
+	return piip;
 }
 
 NodeType STNode::GetNodeType() {

@@ -15,6 +15,8 @@ typedef yy::parser::token token;
 "*" { return '*'; }
 "/" { return '/'; }
 "=" { return '='; }
+"(" { return '('; }
+")" { return ')'; }
 
 "0"|[1-9][0-9]* {   yylval->node = new CNUMBER(yytext);
 					return token::NUMBER; }
