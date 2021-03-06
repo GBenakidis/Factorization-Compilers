@@ -176,7 +176,6 @@ list<STNode*> CAddition::SearchingAddition(list<STNode*> a) {
 	temp = (*it)->SearchingAddition(temp);
 	
 	return temp;
-
 }
 list<STNode*> CSubtraction::SearchingAddition(list<STNode*> a) {
 	list<STNode*>::iterator it = m_children->begin();
@@ -237,3 +236,86 @@ list<STNode*> CIDENTIFIER::SearchingAddition(list<STNode*> a) {
 	return a;
 }
 
+
+list<STNode*> CStatement::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it;
+	list<STNode*> arr;
+	if (m_children->size() != 0) {
+		it = m_children->begin();
+		arr = (*it)->SearchingMultiplication(b);
+	}
+	return arr;
+}
+list<STNode*> CAddition::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<STNode*>::iterator par = m_parents->begin();
+	list<STNode*>temp;
+
+	if ((*it)->GetNodeType() == 7)
+		b.push_back(*it);
+
+	temp = (*it)->SearchingMultiplication(b);
+
+	b = temp;
+	advance(it, 1);
+
+	if ((*it)->GetNodeType() == 7)
+		b.push_back(*it);
+
+	temp = b;
+
+	temp = (*it)->SearchingMultiplication(temp);
+
+	return temp;
+
+}
+list<STNode*> CSubtraction::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	(*it)->SearchingMultiplication(b);
+
+	advance(it, 1);
+	(*it)->SearchingMultiplication(b);
+
+	return b;
+}
+list<STNode*> CMultiplication::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<STNode*>::iterator par = m_parents->begin();
+	list<STNode*>temp;
+
+	temp = (*it)->SearchingAddition(b);
+
+	advance(it, 1);
+
+	temp = (*it)->SearchingAddition(temp);
+
+	return temp;
+}
+list<STNode*> CDivision::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	(*it)->SearchingMultiplication(b);
+
+	advance(it, 1);
+	(*it)->SearchingMultiplication(b);
+	return b;
+}
+list<STNode*> CAssignment::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+
+	CIDENTIFIER* id = dynamic_cast<CIDENTIFIER*>(*it);
+
+	advance(it, 1);
+
+	cout << id->m_name << "=" << GetInitValue(id->m_name) << endl;
+
+	return b;
+}
+
+list<STNode*> CNUMBER::SearchingMultiplication(list<STNode*> b) {
+	// return m_number;
+	return b;
+}
+list<STNode*> CIDENTIFIER::SearchingMultiplication(list<STNode*> b) {
+	// return GetInitValue(m_name);
+	return b;
+}

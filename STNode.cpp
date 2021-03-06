@@ -111,6 +111,17 @@ list<STNode*> STNode::SearchingAddition(list<STNode*> a) {
 	return piip;
 }
 
+list<STNode*> STNode::SearchingMultiplication(list<STNode*> b) {
+	list<STNode*>::iterator it;
+	list<STNode*> piip;
+
+	// diatrexei ta paidia tou komboy
+	for (it = m_children->begin(); it != m_children->end(); it++) {
+		piip = (*it)->SearchingMultiplication(b);
+	}
+	return piip;
+}
+
 NodeType STNode::GetNodeType() {
 	// epistrefoun tipo kombou kai etiketas tou
 
