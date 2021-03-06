@@ -2,6 +2,8 @@
 #include "SymbolNodes.h"
 #include "SymbolTable.h"
 #include <iostream>
+#include <set>
+#include <algorithm>
 
 // ======== ILOPOIHSEIS METHODWN ========
 
@@ -318,4 +320,149 @@ list<STNode*> CNUMBER::SearchingMultiplication(list<STNode*> b) {
 list<STNode*> CIDENTIFIER::SearchingMultiplication(list<STNode*> b) {
 	// return GetInitValue(m_name);
 	return b;
+}
+
+
+list<int> CStatement::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it;
+	list<int> arr;
+
+	if (m_children->size() != 0) { 
+		//=== bgazei ta adds pou den exoyn mult
+		int num_of_pops = 0;
+		for (auto const& i : a) {
+			STNode* kappe = i->GetChild(0), *kappos = i->GetChild(1);
+			if ((kappe->GetNodeType() != 7) && (kappos->GetNodeType() != 7)) {
+				num_of_pops++;
+			}
+		}
+		for (int i = 0; i < num_of_pops; i++) {
+			a.pop_front();
+		}
+		//===
+
+		it = m_children->begin();
+		arr= (*it)->CommonFactor(a, b);
+	}
+	return arr;
+}
+list<int> CAddition::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+	int a_len = a.size();
+
+	int cnt = 0;
+	for (auto const& i : a) {
+		if (m_graphvizLabel != i->GetGraphvizLabel()) {
+			cnt++;
+		}
+	}
+	if (cnt == a_len) { 
+		result1= (*it)->CommonFactor(a, b);
+		return result1;
+	}
+	else {
+		result1 = (*it)->CommonFactor(a, b);
+
+		advance(it, 1);
+
+		result2 = (*it)->CommonFactor(a, b);
+
+		std::list<int> result;
+		std::set_intersection(result1.begin(), result1.end(), result2.begin(), result2.end(), std::back_inserter(result));
+
+		if ( !result.empty()) {
+			return result;
+		}
+		else {
+			result.push_back(-1);
+			return result;
+		}
+
+	}
+
+}
+list<int> CSubtraction::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+
+	result1= (*it)->CommonFactor(a, b) ;
+
+	// auksanoume ton iterator gia na deicnei sto epomeno paidi
+	advance(it, 1);
+	result2 = (*it)->CommonFactor(a, b); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+
+	result1.merge(result2);
+	cout << "ELAAAA ELAELAELELALAELALELAE: " << endl;
+
+	for (auto const& i : result1) {
+		std::cout << "Num: " << i << "\n";
+	}
+	return result1; // epistrefoume tin timi ston gonea
+}
+list<int> CMultiplication::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+	list<STNode*>temp;
+
+	result1 = (*it)->CommonFactor(a, b);
+
+	// auksanoume ton iterator gia na deicnei sto epomeno paidi
+	advance(it, 1);
+	result2 = (*it)->CommonFactor(a, b); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+
+	result1.merge(result2);
+
+	return result1; // epistrefoume tin timi ston gonea
+}
+list<int> CDivision::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+
+	result1 = (*it)->CommonFactor(a, b);
+
+	// auksanoume ton iterator gia na deicnei sto epomeno paidi
+	advance(it, 1);
+	result2 = (*it)->CommonFactor(a, b); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+
+	result1.merge(result2);
+	cout << "ELAAAA ELAELAELELALAELALELAE: " << endl;
+
+	for (auto const& i : result1) {
+		std::cout << "Num: " << i << "\n";
+	}
+	return result1; // epistrefoume tin timi ston gonea
+}
+list<int> CAssignment::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	// prepei na ipologistei h ekfrasi pou brisketai sta aristera tis anathesis
+	// kai i timi tis na anatethei ston SymbolTable
+
+	// deixnei sto prwto stoixeio tis listas(prwto paidi) pou einai to identifier
+	list<STNode*>::iterator it = m_children->begin();
+
+	// to pairnoume to paidi kai to anathetoume se mia metabliti 
+	// tipou identifier wste na mporoume na prospelasoume ta pedia tis klasis
+	CIDENTIFIER* id = dynamic_cast<CIDENTIFIER*>(*it);
+
+	advance(it, 1);
+
+	// dinoume onoma metablitis kai ton arithmo pou prokiptei apo thigatrikous kombous
+
+	// minima pou mas anaferei oti auti i metabliti tropopoihthike
+	cout << id->m_name << "=" << GetInitValue(id->m_name) << endl;
+	list<int> yes;
+	// yes.insert(GetInitValue(id->m_name));
+
+	return yes;
+}
+
+list<int> CNUMBER::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<int> nai;
+	nai.push_back(m_number);
+	return nai;
+}
+list<int> CIDENTIFIER::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<int> val;
+	val.push_back (GetInitValue(m_name));
+	return val;
 }

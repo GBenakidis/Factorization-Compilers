@@ -1,5 +1,6 @@
 #include "STNode.h"
 #include <iostream>
+#include <set>
 
 STNode* g_root=nullptr; // fernei tin riza tou sintaktikou dentrou kai tin DILWNOUME STO STNode.h
 int STNode::m_serialCounter = 0;
@@ -118,6 +119,17 @@ list<STNode*> STNode::SearchingMultiplication(list<STNode*> b) {
 	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
 		piip = (*it)->SearchingMultiplication(b);
+	}
+	return piip;
+}
+
+list<int> STNode::CommonFactor(list<STNode*> a, list<STNode*> b) {
+	list<STNode*>::iterator it;
+	list<int> piip;
+
+	// diatrexei ta paidia tou komboy
+	for (it = m_children->begin(); it != m_children->end(); it++) {
+		piip=  (*it)->CommonFactor(a,b) ;
 	}
 	return piip;
 }

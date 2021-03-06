@@ -4,6 +4,7 @@
 #include "STNode.h"
 #include "SymbolNodes.h"
 #include "Grammar.tab.h"
+#include <set>
 using namespace std;
 extern FILE* yyin;
 
@@ -30,12 +31,6 @@ int main(int argc, char* argv[]) {
 	list<STNode*> all_add; // periexei oles tis prostheseis poy exoume sto dentro
 	all_add = g_root -> SearchingAddition(all_add);
 
-	cout << "Prosthseis: \n";
-	for (auto const& i : all_add) {
-		std::cout << i->GetGraphvizLabel() << "\n";
-	}
-	cout << "\n";
-
 	//================================================================
 
 	// ===== 4o perasma: sinartisi pou briskei tous pollaplasiasmous twn athroismatwn ===
@@ -43,18 +38,25 @@ int main(int argc, char* argv[]) {
 	list<STNode*> all_multiple; // periexei oles tous pollaplasiasmous poy exoume sto dentro
 	all_multiple = g_root->SearchingMultiplication(all_multiple);
 
-	cout << "Pollaplasiasmoi: \n";
-	for (auto const& i : all_multiple) {
-		std::cout << i->GetGraphvizLabel() << "\n";
+	//===================================================================================
+	
+	//=== 5o perasma: euresi koinou paragonta, ekmetaleuontas tous pinakes all_add kai all_multiple ===
+	
+	list<int> koinos_paragontas;
+	koinos_paragontas = g_root->CommonFactor(all_add, all_multiple);
+	cout << "O koinos paragontas: " ;
+	for (auto const& i : koinos_paragontas) {
+		std::cout << i << "\n";
 	}
 	cout << "\n";
 
-	//===================================================================================
-	
+	//=================================================================================================
+
 	//===== teleutaio perasma: ektelesi praksewn panw sto dentro =====
+
 	int nai;
 	nai = g_root->Visit_Eval();
-	cout << "Result of tree: " << nai << endl;
+	cout << "Result of the operations: " << nai << endl;
 
 	//================================================================
 
