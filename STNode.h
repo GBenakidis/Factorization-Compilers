@@ -27,9 +27,7 @@ public:
 
 	virtual list<STNode*> SearchingAddition(list<STNode*>);
 
-	virtual list<STNode*> SearchingMultiplication(list<STNode*>);
-
-	virtual list<int> CommonFactor(list<STNode*>, list<STNode*>);
+	virtual list<int> CommonFactor(list<STNode*>);
 
 	virtual int Visit_Eval();
 

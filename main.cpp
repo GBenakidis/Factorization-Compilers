@@ -33,17 +33,25 @@ int main(int argc, char* argv[]) {
 
 	//================================================================
 
-	// ===== 4o perasma: sinartisi pou briskei tous pollaplasiasmous twn athroismatwn ===
+	// ===== krataei sthn lista all_add mono tous komvous add pou exoyn paidi pollaplasiasmo ====
 
-	list<STNode*> all_multiple; // periexei oles tous pollaplasiasmous poy exoume sto dentro
-	all_multiple = g_root->SearchingMultiplication(all_multiple);
+	int num_of_pops = 0;
+	for (auto const& i : all_add) {
+		STNode* kappe = i->GetChild(0), * kappos = i->GetChild(1);
+		if ((kappe->GetNodeType() != 7) && (kappos->GetNodeType() != 7)) {
+			num_of_pops++;
+		}
+	}
+	for (int i = 0; i < num_of_pops; i++) {
+		all_add.pop_front();
+	}
 
+	cout << "To plithos twn athrismatvn ginomenwn einai " << all_add.size() << endl;
 	//===================================================================================
 	
-	//=== 5o perasma: euresi koinou paragonta, ekmetaleuontas tous pinakes all_add kai all_multiple ===
-	
+	//=== 4o perasma: euresi koinou paragonta, ekmetaleuontas tous pinakes all_add kai all_multiple ===
 	list<int> koinos_paragontas;
-	koinos_paragontas = g_root->CommonFactor(all_add, all_multiple);
+	koinos_paragontas = g_root->CommonFactor(all_add);
 	cout << "O koinos paragontas: " ;
 	for (auto const& i : koinos_paragontas) {
 		std::cout << i << "\n";

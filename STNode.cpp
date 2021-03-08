@@ -112,24 +112,13 @@ list<STNode*> STNode::SearchingAddition(list<STNode*> a) {
 	return piip;
 }
 
-list<STNode*> STNode::SearchingMultiplication(list<STNode*> b) {
-	list<STNode*>::iterator it;
-	list<STNode*> piip;
-
-	// diatrexei ta paidia tou komboy
-	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip = (*it)->SearchingMultiplication(b);
-	}
-	return piip;
-}
-
-list<int> STNode::CommonFactor(list<STNode*> a, list<STNode*> b) {
+list<int> STNode::CommonFactor(list<STNode*> a) {
 	list<STNode*>::iterator it;
 	list<int> piip;
 
 	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip=  (*it)->CommonFactor(a,b) ;
+		piip=  (*it)->CommonFactor(a) ;
 	}
 	return piip;
 }
