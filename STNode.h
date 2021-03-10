@@ -24,11 +24,18 @@ public:
 	void AddChild(STNode* node);
 
 	virtual void Visit_SyntaxTreePrinter(ofstream* dotfile, STNode* parent);
+	virtual void Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor);
 
 	virtual list<STNode*> SearchingAddition(list<STNode*>);
 
+	virtual list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>);
+
 	virtual list<int> CommonFactor(list<STNode*>);
 
+	virtual list<int> FindingNums(list<STNode*>);
+
+	virtual list<STNode*> FindingNodeForFactoring(int, list<STNode*>);
+	
 	virtual int Visit_Eval();
 
 protected:
@@ -38,6 +45,7 @@ protected:
 	static int m_serialCounter;
 	list<STNode*>* m_children;
 	list<STNode*>* m_parents;
+
 
 };
 

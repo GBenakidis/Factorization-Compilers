@@ -14,6 +14,7 @@ public:
 	// epilogo kai na kleisei to arxeio, gi auto tin methodo Visit_SyntaxTreePrinter pou exoume orisei 
 	// stin afirimeni goniki klasi tin iposkelizoume me thn override
 	void Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) override;
+	void Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor) override;
 
 };
 
@@ -30,7 +31,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CAddition : public STNode {
@@ -40,7 +44,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int,list<STNode*>) override;
 };
 
 class CSubtraction : public STNode {
@@ -50,7 +57,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CDivision : public STNode {
@@ -60,7 +70,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CMultiplication : public STNode {
@@ -70,7 +83,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CNUMBER : public STNode {
@@ -84,7 +100,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CIDENTIFIER : public STNode {
@@ -96,7 +115,10 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };
 
 class CAssignment : public STNode {
@@ -106,5 +128,8 @@ public:
 
 	int Visit_Eval() override;
 	list<STNode*> SearchingAddition(list<STNode*>) override;
+	list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>) override;
 	list<int> CommonFactor(list<STNode*>) override;
+	list<int> FindingNums(list<STNode*>) override;
+	list<STNode*> FindingNodeForFactoring(int, list<STNode*>) override;
 };

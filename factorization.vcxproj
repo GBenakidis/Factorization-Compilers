@@ -167,9 +167,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="stree.dot.gif" />
+    <Image Include="stree_factor.dot.gif" />
   </ItemGroup>
   <ItemGroup>
     <None Include="stree.dot" />
+    <None Include="stree_factor.dot" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

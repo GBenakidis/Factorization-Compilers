@@ -74,8 +74,12 @@
     <Image Include="stree.dot.gif">
       <Filter>Grammar Files</Filter>
     </Image>
+    <Image Include="stree_factor.dot.gif">
+      <Filter>Grammar Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="stree.dot" />
+    <None Include="stree_factor.dot" />
   </ItemGroup>
 </Project>

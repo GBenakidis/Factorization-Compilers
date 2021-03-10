@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <stdlib.h>
 #include <fstream>
 #include "STNode.h"
@@ -25,40 +25,98 @@ int main(int argc, char* argv[]) {
 	// -o -> output arxeio
 	system("dot -Tgif stree.dot -o stree.dot.gif");
 
-	// KALITERI EKDOSI
 	// ===== 3o perasma: sinartisi pou briskei ta athroismata ===
 
-	list<STNode*> all_add; // periexei oles tis prostheseis poy exoume sto dentro
-	all_add = g_root -> SearchingAddition(all_add);
+	list<STNode*> additions; // periexei oles tis prostheseis poy exoume sto dentro
+	additions = g_root -> SearchingAddition(additions);
 
 	//================================================================
 
-	// ===== krataei sthn lista all_add mono tous komvous add pou exoyn paidi pollaplasiasmo ====
+	// ===== krataei sthn lista all_add mono tous komvous add twn athroismatwn ginomenwn ====
 
-	int num_of_pops = 0;
-	for (auto const& i : all_add) {
-		STNode* kappe = i->GetChild(0), * kappos = i->GetChild(1);
-		if ((kappe->GetNodeType() != 7) && (kappos->GetNodeType() != 7)) {
-			num_of_pops++;
+	list<STNode*> to_delete;
+	for (auto const& i : additions) {
+		STNode* paidi_1 = i->GetChild(0)->GetChild(1), * paidi_2 = i->GetChild(1);
+		if ((paidi_1->GetNodeType() != NT_EXPRESSION_MULTIPLICATION) || (paidi_2->GetNodeType() != NT_EXPRESSION_MULTIPLICATION)) {
+			to_delete.push_back(i);
 		}
 	}
-	for (int i = 0; i < num_of_pops; i++) {
-		all_add.pop_front();
+
+	list<STNode*> all_add;
+	int additions_size= additions.size();
+	bool comm = false;
+	for (auto const& i : additions) {
+		for (auto const& j : to_delete) {
+			if (i == j) { comm = true; }
+		}
+		if (!comm) {
+			all_add.push_back(i);
+		}
+		comm = false;
 	}
 
-	cout << "To plithos twn athrismatvn ginomenwn einai " << all_add.size() << endl;
+	/*
+	cout << "ALL ADD LIST _  __ :"<< endl;
+	for (auto const& i : all_add) {
+		STNode* paidi_1 = i->GetChild(0)->GetChild(1), * paidi_2 = i->GetChild(1);
+		cout << "EIMAI TO ADDITION --> " <<i->GetGraphvizLabel() << endl;
+		cout << "TA PAIDIA MOU EINAI --> PAIDI 1 " << paidi_1->GetGraphvizLabel() << " KAI PAIDI 2 " << paidi_2->GetGraphvizLabel() << endl;
+		cout << "TA PAIDIA TOU 1 EINAII -..>->>> " << paidi_1->GetChild(0)->GetGraphvizLabel()<< " KAI 2 " << paidi_1->GetChild(1)->GetGraphvizLabel() <<  endl;
+		cout << "TA PAIDIA TOU 1 EINAII -..>->>> " << paidi_2->GetChild(0)->GetGraphvizLabel() << " KAI 2 " << paidi_2->GetChild(1)->GetGraphvizLabel() << endl;
+	}
+	*/
+	//cout << "To plithos twn athrismatvn ginomenwn einai " << all_add.size() << endl;
+
+	cout << "OLA TA ATHROISMATA GINOMENWN: " << endl;
+	for (auto const& i : all_add) {
+		cout << i->GetGraphvizLabel() << endl ;
+	}
+
 	//===================================================================================
 	
-	//=== 4o perasma: euresi koinou paragonta, ekmetaleuontas tous pinakes all_add kai all_multiple ===
-	list<int> koinos_paragontas;
-	koinos_paragontas = g_root->CommonFactor(all_add);
-	cout << "O koinos paragontas: " ;
-	for (auto const& i : koinos_paragontas) {
-		std::cout << i << "\n";
-	}
-	cout << "\n";
+	//======= 4o perasma: epistrefw tous pollaplasiasmous pou einai mesa sta addition =========
 
-	//=================================================================================================
+	list<STNode*> multiplications; // periexei oles tis prostheseis poy exoume sto dentro
+	multiplications = g_root->SearchingMultiplications(all_add, multiplications );
+	cout << "\nTA MULTIPLICATIONS TWN ATHROISMATWN GINOMENWN: "<< endl;
+	for (auto const& i : multiplications) {
+		cout  << i->GetGraphvizLabel() << endl;
+	}
+
+	//=========================================================================================
+
+	//=== 5o perasma: euresi koinou paragonta ========================================================
+
+	list<int> lista_koinos_paragontas;
+	lista_koinos_paragontas = g_root->CommonFactor(all_add);
+	int common_factor = lista_koinos_paragontas.front();
+
+	cout << "O KOINOS PARAGONTAS: " << common_factor << endl;
+
+	//===================================================================================
+
+	//======= 6o perasma: briskoume ta noumera twn athroismatwn ginomenwn kai ta apothikeuoume se lista me thn seira ==
+
+	/*
+	list<int> all_nums;
+	all_nums = g_root->FindingNums(all_add);
+	cout << "OLOI OI ARITHMOI EINAI: " << endl;
+	for (auto const& i : all_nums) {
+		cout << i << endl;
+	}
+	*/
+
+	//=================================================================================================================
+
+	//======== 6o perasma: dimiourgia tou paragontopoihmenou dentroy ==================
+
+	//ofstream* k = new ofstream("stree_factor.dot", ofstream::out);
+	//g_root->Visit_FactorizedTree(&all_add, k, nullptr, common_factor);
+
+	//system("dot -Tgif stree_factor.dot -o stree_factor.dot.gif");
+
+	//=================================================================================
+
 
 	//===== teleutaio perasma: ektelesi praksewn panw sto dentro =====
 
