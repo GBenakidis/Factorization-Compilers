@@ -95,48 +95,41 @@ void STNode::Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNod
 	int eksw = 0;
 	(*factfile) << "\"" << parent->GetGraphvizLabel() << "\"->\"" << GetGraphvizLabel() << "\";\n";
 	if (flag_1) {
-		
 		for (it = m_children->begin(); it != m_children->end(); it++) {
-
 			if ((*it)->GetNodeType() != NT_EXPRESSION_ADDITION) {
 				eksw++;
 				(*it)->Visit_FactorizedTree(node, factfile, this, common_factor);
-				
 				flag_1 = false;
 			}
 		}
 	}
-	cout << "tolo " << eksw << endl;
 	list<STNode*>::iterator po = m_children->begin();
 
 	if (eksw >= 1) {
-		list<STNode*>::iterator giwrgo = node->begin();
+		list<STNode*>::iterator ite = node->begin();
 		(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << "MULTIPLICATION_X" << "\";\n";
 		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << common_factor->GetGraphvizLabel() << "\";\n";
-		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << (*giwrgo)->GetGraphvizLabel() << "\";\n"; //multi -> add1
+		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << (*ite)->GetGraphvizLabel() << "\";\n";
 
 		list<STNode*>::iterator paidi = node->begin();
-		string gtch, gtch1;
+		string str1, str2;
 		cout << "EE " << (*paidi)->GetGraphvizLabel() << "GEIA " << endl;
 	
-		for (po = node->begin(); po != node->end(); po++) { //add -> add
-			gtch = (*giwrgo)->GetChild(0)->GetChild(0)->GetGraphvizLabel(); // A+B
-			gtch1 = (*giwrgo)->GetChild(1)->GetChild(0)->GetGraphvizLabel();
+		for (po = node->begin(); po != node->end(); po++) { 
+			str1 = (*ite)->GetChild(0)->GetChild(0)->GetGraphvizLabel();
+			str2 = (*ite)->GetChild(1)->GetChild(0)->GetGraphvizLabel();
 		
-			cout << gtch1;
-			if (gtch == common_factor->GetGraphvizLabel()) {
-				gtch = (*giwrgo)->GetChild(0)->GetChild(1)->GetGraphvizLabel();
+			cout << str2;
+			if (str1 == common_factor->GetGraphvizLabel()) {
+				str1 = (*ite)->GetChild(0)->GetChild(1)->GetGraphvizLabel();
 			}
-			if(gtch1 == common_factor->GetGraphvizLabel()) {
-				cout << ".i.\n";
-				gtch1 = (*giwrgo)->GetChild(1)->GetChild(1)->GetGraphvizLabel();
+			if(str2 == common_factor->GetGraphvizLabel()) {
+				str2 = (*ite)->GetChild(1)->GetChild(1)->GetGraphvizLabel();
 			}
 			if (po != node->end()) {
-				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << gtch << "\";\n";
-				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << gtch1 << "\";\n";
+				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << str1 << "\";\n";
+				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << str2 << "\";\n";
 			}
-
-			//(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << gtch<< "\";\n";	
 		}
 		eksw = 0;
 	}
@@ -178,35 +171,24 @@ list<STNode*> STNode::SearchingMultiplications(list<STNode*> a, list<STNode*> b)
 	return piip;
 }
 
-list<int> STNode::CommonFactor(list<STNode*> a) {
+list<int> STNode::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it;
 	list<int> piip;
 
 	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip=  (*it)->CommonFactor(a) ;
+		piip=  (*it)->CommonFactor(a,b) ;
 	}
 	return piip;
 }
 
-list<int> STNode::FindingNums(list<STNode*> a) {
+list<int> STNode::FindingNums(list<STNode*> a, list<STNode*> b , int c) {
 	list<STNode*>::iterator it;
 	list<int> piip;
 
 	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip = (*it)->FindingNums(a);
-	}
-	return piip;
-}
-
-list<STNode*> STNode::FindingNodeForFactoring(int a, list<STNode*> node_for_factoring) {
-	list<STNode*>::iterator it;
-	list<STNode*> piip;
-
-	// diatrexei ta paidia tou komboy
-	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip = (*it)->FindingNodeForFactoring(a, node_for_factoring);
+		piip = (*it)->FindingNums(a,b,c);
 	}
 	return piip;
 }

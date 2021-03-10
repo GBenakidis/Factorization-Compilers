@@ -30,11 +30,9 @@ public:
 
 	virtual list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>);
 
-	virtual list<int> CommonFactor(list<STNode*>);
+	virtual list<int> CommonFactor(list<STNode*>,list<STNode*>);
 
-	virtual list<int> FindingNums(list<STNode*>);
-
-	virtual list<STNode*> FindingNodeForFactoring(int, list<STNode*>);
+	virtual list<int> FindingNums(list<STNode*>, list<STNode*>, int);
 	
 	virtual int Visit_Eval();
 

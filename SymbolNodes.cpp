@@ -75,10 +75,6 @@ void CCompileUnit::Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) {
 
 void CCompileUnit::Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor) {
 	list<STNode*>::iterator it;
-
-	// --- Edw dimiourgoume ta .dot --
-	// elegxoume an o kombos exei patera
-
 	if (parent == nullptr) {
 		(*factfile) << "digraph G{ \n";
 		for (it = m_children->begin(); it != m_children->end(); it++) {
@@ -86,11 +82,9 @@ void CCompileUnit::Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile,
 		}
 		(*factfile) << "}";
 
-		//kleinoume to arxeio
 		factfile->close();
 	}
 	else {
-		// klisi tis methodo visit tis gonikis klasis
 		STNode::Visit_FactorizedTree(node, factfile, this, common_factor);
 	}
 }
@@ -183,8 +177,6 @@ list<STNode*> CStatement::SearchingAddition(list<STNode*> a) {
 	list<STNode*> arr;
 	if (m_children->size() != 0) {
 		it = m_children->begin();
-		if ((*it)->GetNodeType() == NT_EXPRESSION_ADDITION)
-			a.push_back(*it);
 		arr = (*it)->SearchingAddition(a);
 	}
 	return arr;
@@ -194,8 +186,7 @@ list<STNode*> CAddition::SearchingAddition(list<STNode*> a) {
 	list<STNode*>::iterator par = m_parents ->begin();
 	list<STNode*>temp;
 
-	if((*it)->GetNodeType() == NT_EXPRESSION_ADDITION)
-		a.push_back(*it);
+	a.push_back(this);
 
 	temp = (*it)->SearchingAddition(a);
 
@@ -350,41 +341,39 @@ list<STNode*> CIDENTIFIER::SearchingMultiplications(list<STNode*> a, list<STNode
 }
 
 
-list<int> CStatement::CommonFactor(list<STNode*> a) {
+list<int> CStatement::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it;
 	list<int> arr;
 
 	if (m_children->size() != 0) { 
 		it = m_children->begin();
-		arr= (*it)->CommonFactor(a);
+		arr= (*it)->CommonFactor(a,b);
 	}
 	return arr;
 }
-list<int> CAddition::CommonFactor(list<STNode*> a) {
+list<int> CAddition::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it = m_children->begin();
-	list<STNode*>::iterator em = m_children->begin();
+	list<STNode*>::iterator ed = m_children->begin();
 	list<STNode*> edw;
 	list<int> result1, result2;
-
 	int a_len = a.size();
 
 	int cnt = 0;
 	for (auto const& i : a) {				 // psaxnoume an o kombos pou briskomaste einai mesa stin lista me ta athroismata ginomenwn
-		if (m_graphvizLabel != i->GetGraphvizLabel()) {
+		if (this->GetGraphvizLabel() != i->GetGraphvizLabel()) {
 			cnt++;		}
 	}
-	if (cnt == a_len) {						// an den einai pame sto epomeno addition
-		result1= (*it)->CommonFactor(a);
-		return result1;
+	if (cnt == a_len) {						// an den einai girname
+		advance(ed, 1);
+		list<int> last_multi = (*ed)->CommonFactor(a, b);
+		return last_multi;
 	}
 	else {									// an einai pairnoume tis times twn paidiwn, tis siggrinoyme kai briskoume ton koino paragonta
-		result1 = (*it)->CommonFactor(a);
-
+		
+		result1 = (*it)->CommonFactor(a, b);
 		advance(it, 1);
+		result2 = (*it)->CommonFactor(a, b);
 
-		result2 = (*it)->CommonFactor(a);
-
-		list<int> temp = result1;			// apothikeuoyme prosorina ton koino paragonta
 		std::list<int> result;
 		std::set_intersection(result1.begin(), result1.end(), result2.begin(), result2.end(), std::back_inserter(result));
 
@@ -398,46 +387,52 @@ list<int> CAddition::CommonFactor(list<STNode*> a) {
 		}
 	}
 }
-list<int> CSubtraction::CommonFactor(list<STNode*> a) {
+list<int> CSubtraction::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it = m_children->begin();
 	list<int> result1, result2;
 
-	result1= (*it)->CommonFactor(a) ;
-
+	result1= (*it)->CommonFactor(a, b);
 	// auksanoume ton iterator gia na deicnei sto epomeno paidi
 	advance(it, 1);
-	result2 = (*it)->CommonFactor(a); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+	result2 = (*it)->CommonFactor(a, b); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
 
 	result1.merge(result2);
-
-	for (auto const& i : result1) {
-		std::cout << "Num: " << i << "\n";
-	}
 	return result1; // epistrefoume tin timi ston gonea
 }
-list<int> CMultiplication::CommonFactor(list<STNode*> a) {
+list<int> CMultiplication::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it = m_children->begin();
 	list<int> result1, result2;
 	list<STNode*>temp;
 
-	result1 = (*it)->CommonFactor(a);
+	int cnt = 0;
+	int b_len = b.size();
+	for (auto const& i : b) {				 // psaxnoume an o kombos pou briskomaste einai mesa stin lista me ta athroismata ginomenwn
+		if (this->GetGraphvizLabel() != i->GetGraphvizLabel()) {
+			cnt++;
+		}
+	}
+	if (cnt == b_len) {						// an den einai pame sto epomeno mult
+		return result1;
+	}
+	else {
 
-	// auksanoume ton iterator gia na deicnei sto epomeno paidi
-	advance(it, 1);
-	result2 = (*it)->CommonFactor(a); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+		result1 = (*it)->CommonFactor(a, b);
+		advance(it, 1);
+		result2 = (*it)->CommonFactor(a, b);
 
-	result1.merge(result2);
-	return result1; // epistrefoume tin timi ston gonea
+		result1.merge(result2);
+		return result1;
+	}	
 }
-list<int> CDivision::CommonFactor(list<STNode*> a) {
+list<int> CDivision::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it = m_children->begin();
 	list<int> result1, result2;
 
-	result1 = (*it)->CommonFactor(a);
+	result1 = (*it)->CommonFactor(a, b);
 
 	// auksanoume ton iterator gia na deicnei sto epomeno paidi
 	advance(it, 1);
-	result2 = (*it)->CommonFactor(a); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+	result2 = (*it)->CommonFactor(a, b); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
 
 	result1.merge(result2);
 	cout << "ELAAAA ELAELAELELALAELALELAE: " << endl;
@@ -447,7 +442,7 @@ list<int> CDivision::CommonFactor(list<STNode*> a) {
 	}
 	return result1; // epistrefoume tin timi ston gonea
 }
-list<int> CAssignment::CommonFactor(list<STNode*> a) {
+list<int> CAssignment::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	// prepei na ipologistei h ekfrasi pou brisketai sta aristera tis anathesis
 	// kai i timi tis na anatethei ston SymbolTable
 
@@ -470,73 +465,115 @@ list<int> CAssignment::CommonFactor(list<STNode*> a) {
 	return yes;
 }
 
-list<int> CNUMBER::CommonFactor(list<STNode*> a) {
+list<int> CNUMBER::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<int> nai;
 	nai.push_back(m_number);
 	return nai;
 }
-list<int> CIDENTIFIER::CommonFactor(list<STNode*> a) {
+list<int> CIDENTIFIER::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<int> val;
 	return val;
 }
 
 
-bool found = false;
-list<int> CStatement::FindingNums(list<STNode*> a) {
+list<int> CStatement::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	list<STNode*>::iterator it;
 	list<int> arr;
 
 	if (m_children->size() != 0) {
 		it = m_children->begin();
-		arr = (*it)->FindingNums(a);
+		arr = (*it)->FindingNums(a,b,c);
 	}
 	return arr;
 }
-list<int> CAddition::FindingNums(list<STNode*> a) {
+list<int> CAddition::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	list<STNode*>::iterator it = m_children->begin();
-	list<STNode*>::iterator em = m_children->begin();
+	list<STNode*>::iterator ed = m_children->begin();
+	list<STNode*> edw;
 	list<int> result1, result2;
-
 	int a_len = a.size();
 
 	int cnt = 0;
-
-	for (auto const& i : a) { // psaxnoume an o kombos pou briskomaste einai mesa stin lista me ta athroismata ginomenwn
-		if (m_graphvizLabel != i->GetGraphvizLabel()) {
+	for (auto const& i : a) {				 // psaxnoume an o kombos pou briskomaste einai mesa stin lista me ta athroismata ginomenwn
+		if (this->GetGraphvizLabel() != i->GetGraphvizLabel()) {
 			cnt++;
-			
 		}
 	}
-	if (cnt == a_len) { // an den einai pame sto epomeno addition
+	if (cnt == a_len) {						// an den einai girname
+		advance(ed, 1);
+		list<int> last_multi = (*ed)->FindingNums(a, b, c);
+		return last_multi;
+	}
+	else {									// an einai pairnoume tis times twn paidiwn, tis siggrinoyme kai briskoume ton koino paragonta
 
-		result1 = (*it)->CommonFactor(a);
+		result1 = (*it)->FindingNums(a, b, c);
+		advance(it, 1);
+		result2 = (*it)->FindingNums(a, b, c);
+
+		result1.merge(result2);
+		return result1;
+
+	}
+}
+list<int> CSubtraction::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+
+	result1 = (*it)->FindingNums(a, b, c);
+
+	// auksanoume ton iterator gia na deicnei sto epomeno paidi
+	advance(it, 1);
+	result2 = (*it)->FindingNums(a, b, c); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+
+	result1.merge(result2);
+
+	for (auto const& i : result1) {
+		std::cout << "Num: " << i << "\n";
+	}
+	return result1; // epistrefoume tin timi ston gonea
+}
+list<int> CMultiplication::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
+	list<STNode*>::iterator it = m_children->begin();
+	list<int> result1, result2;
+	list<STNode*>temp;
+
+	int cnt = 0;
+	int b_len = b.size();
+	for (auto const& i : b) {				 // psaxnoume an o kombos pou briskomaste einai mesa stin lista me ta athroismata ginomenwn
+		if (this->GetGraphvizLabel() != i->GetGraphvizLabel()) {
+			cnt++;
+		}
+	}
+	if (cnt == b_len) {	
+		cout << " O NAI "<< this->GetGraphvizLabel() << endl;
 		return result1;
 	}
-	else {	// an einai pairnoume tis times twn paidiwn, tis siggrinoyme kai briskoume ton koino paragonta
+	else {
 
-		cout << "EIMAI O: " << GetGraphvizLabel() << endl;
-		
-		result1 = (*it)->FindingNums(a);
-		cout << "TO ARISTERO PAID EINIA: " << (*it)->GetGraphvizLabel() << endl;
-
+		result1 = (*it)->FindingNums(a, b,c);
 		advance(it, 1);
-
-		cout << "TO DEKSI PAID EINIA: " << (*it)->GetGraphvizLabel() << endl;
-		result2 = (*it)->FindingNums(a);
-
+		result2 = (*it)->FindingNums(a, b,c);
+		bool found1 = (std::find(result1.begin(), result1.end(), c) != result1.end());
+		bool found2 = (std::find(result2.begin(), result2.end(), c) != result2.end());
+		if (!found1 && !found2) {
+			result1.clear();
+			return result1;
+		}
+		result1.remove(c);
+		result2.remove(c);
 		result1.merge(result2);
 		return result1;
 	}
 }
-list<int> CSubtraction::FindingNums(list<STNode*> a) {
+list<int> CDivision::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	list<STNode*>::iterator it = m_children->begin();
 	list<int> result1, result2;
 
-	result1 = (*it)->FindingNums(a);
+	result1 = (*it)->FindingNums(a, b, c);
 
 	// auksanoume ton iterator gia na deicnei sto epomeno paidi
 	advance(it, 1);
-	result2 = (*it)->FindingNums(a); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
+	result2 = (*it)->FindingNums(a, b, c); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
 
 	result1.merge(result2);
 
@@ -545,39 +582,7 @@ list<int> CSubtraction::FindingNums(list<STNode*> a) {
 	}
 	return result1; // epistrefoume tin timi ston gonea
 }
-list<int> CMultiplication::FindingNums(list<STNode*> a) {
-	list<STNode*>::iterator it = m_children->begin();
-	list<int> result1, result2;
-	list<STNode*>temp;
-	result1 = (*it)->FindingNums(a);
-	cout << "      KAI TA PAIDIA M EINAI " << endl;
-	cout << "------" << (*it)->GetGraphvizLabel() << endl;
-	advance(it, 1);
-	cout << "------" << (*it)->GetGraphvizLabel() << endl;
-	result2 = (*it)->FindingNums(a);
-
-	result1.merge(result2);
-
-	return result1;
-}
-list<int> CDivision::FindingNums(list<STNode*> a) {
-	list<STNode*>::iterator it = m_children->begin();
-	list<int> result1, result2;
-
-	result1 = (*it)->FindingNums(a);
-
-	// auksanoume ton iterator gia na deicnei sto epomeno paidi
-	advance(it, 1);
-	result2 = (*it)->FindingNums(a); // pollaplasiazoume ayto pou tha epistrepsei gia to DEUTERO paidi
-
-	result1.merge(result2);
-
-	for (auto const& i : result1) {
-		std::cout << "Num: " << i << "\n";
-	}
-	return result1; // epistrefoume tin timi ston gonea
-}
-list<int> CAssignment::FindingNums(list<STNode*> a) {
+list<int> CAssignment::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	// prepei na ipologistei h ekfrasi pou brisketai sta aristera tis anathesis
 	// kai i timi tis na anatethei ston SymbolTable
 
@@ -600,12 +605,14 @@ list<int> CAssignment::FindingNums(list<STNode*> a) {
 	return yes;
 }
 
-list<int> CNUMBER::FindingNums(list<STNode*> a) {
+list<int> CNUMBER::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	list<int> nai;
-	nai.push_back(m_number);
+
+		nai.push_back(m_number);
+
 	return nai;
 }
-list<int> CIDENTIFIER::FindingNums(list<STNode*> a) {
+list<int> CIDENTIFIER::FindingNums(list<STNode*> a, list<STNode*> b, int c) {
 	list<int> val;
 	return val;
 }
