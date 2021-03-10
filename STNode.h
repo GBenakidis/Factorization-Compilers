@@ -24,14 +24,12 @@ public:
 	void AddChild(STNode* node);
 
 	virtual void Visit_SyntaxTreePrinter(ofstream* dotfile, STNode* parent);
-	virtual void Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor);
+	virtual void Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, int common_factor, list<int> all_nums);
 
 	virtual list<STNode*> SearchingAddition(list<STNode*>);
-
 	virtual list<STNode*> SearchingMultiplications(list<STNode*>, list<STNode*>);
 
 	virtual list<int> CommonFactor(list<STNode*>,list<STNode*>);
-
 	virtual list<int> FindingNums(list<STNode*>, list<STNode*>, int);
 	
 	virtual int Visit_Eval();
@@ -44,8 +42,6 @@ protected:
 	list<STNode*>* m_children;
 	list<STNode*>* m_parents;
 
-
 };
 
-
-extern STNode* g_root; //dilwsi
+extern STNode* g_root;	// declaration

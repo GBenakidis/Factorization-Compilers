@@ -1,6 +1,5 @@
 #include "SymbolTable.h"
 
-// dilwnoumr metabliti tou pianak simbolwn
 map<string, int> g_symbolTable;
 
 int GetInitValue(string name) {
@@ -8,7 +7,7 @@ int GetInitValue(string name) {
 	int value = 0;
 
 	it = g_symbolTable.find(name);
-	if (it != g_symbolTable.end()) { // se periptwsi pou i metabliti toy simbolou den iparxei ston pinaka simbolwn
+	if (it != g_symbolTable.end()) {
 		value = g_symbolTable[name];
 	}
 	else {

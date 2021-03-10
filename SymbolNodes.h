@@ -1,20 +1,13 @@
 #pragma once
-// periexei ton orismo tis gonikis klasis tou sintaktikou dentrou
 #include "STNode.h"
-
-// twra ftiaxnoume mia klasi gia kathe ksexwristo tipo kombou 
-// pou theloume na apikonistei sto sintaktiko dentro
 
 class CCompileUnit : public STNode {
 public:
 	CCompileUnit();
 	virtual ~CCompileUnit();
 
-	// ektelei to perasma, episis tin eksidikeuoume giati o kombos CCompileUnit tha prepei na eksagei prologo 
-	// epilogo kai na kleisei to arxeio, gi auto tin methodo Visit_SyntaxTreePrinter pou exoume orisei 
-	// stin afirimeni goniki klasi tin iposkelizoume me thn override
 	void Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) override;
-	void Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor) override;
+	void Visit_FactorizedTree(list<STNode*>* node, ofstream* factfile, STNode* parent, int common_factor, list<int> all_nums) override;
 
 };
 

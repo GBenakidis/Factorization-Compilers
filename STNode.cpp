@@ -2,7 +2,7 @@
 #include <iostream>
 #include <set>
 
-STNode* g_root=nullptr; // fernei tin riza tou sintaktikou dentrou kai tin DILWNOUME STO STNode.h
+STNode* g_root=nullptr;						// brings the root of the syntax tree and we declare it in STNode.h
 int STNode::m_serialCounter = 0;
 const char* g_nodeTypeLabels[] = {
 	"COMPILEUNIT", "STATEMENTS", "STATEMENT",
@@ -12,25 +12,17 @@ const char* g_nodeTypeLabels[] = {
 };
 
 STNode::STNode(NodeType type) {
-	// afirimeni goniki klasi
-
 	m_nodeType = type;
 	m_serial = m_serialCounter++;
 	m_children = new list<STNode*>;
 	m_parents = new list<STNode*>;
 
-	// arxikopoioume to onoma tou kombou me to onoma toy tipou pou
-	// exoume orisei ston pinaka me ta alfarithmitika
 	m_graphvizLabel = _strdup(g_nodeTypeLabels[m_nodeType]);
 
-	// episinaptoume etiketa kai ton seiriako arithmo tou kombou
 	m_graphvizLabel.append("_" + std::to_string(m_serial));
 }
 
 STNode::~STNode() {
-	// apeleutheronoyme opoia mnimi exoyme desmeusei sto constructor
-
-	// delete apo filla stin riza
 	list<STNode*>::iterator it;
 	for (it = m_children->begin(); it != m_children->end(); it++) {
 		delete* it;
@@ -40,162 +32,129 @@ STNode::~STNode() {
 }
 
 void STNode::AddChild(STNode* node) {
-	// prosthetoume sto pisw meros tis listas ton kombo
 	m_children->push_back(node);
-
-	//pame ston kombo pou prosthesame kai enimerwnoyme tin lista 
-	// me tous goneis oti o trexontas kombos apotelei patera tou kombou node
 	node->m_parents->push_back(this);
 }
 
 STNode* STNode::GetChild(int index) {
 	list<STNode*>::iterator it = m_children->begin();
-
-	// proothoume ton iterator ston index-th kataseira paidi
 	advance(it, index);
-
-	// * gia na epistrepsei to paidi
 	return *it;
 }
 
 STNode* STNode::GetParent(int index){
 	list<STNode*>::iterator it = m_parents->begin();
-
-	// proothoume ton iterator ston index-th kataseira gonea
 	advance(it, index);
-
-	// * gia na epistrepsei ton gonea
 	return *it;
 }
 
 void STNode::Visit_SyntaxTreePrinter(ofstream* dotFile, STNode* parent) {
-	//diatrexei ta paidia tou trexon kombou pou tha episkeutoume
 	list<STNode*>::iterator it; 
 
-	//tiponoume tin akmi apo ton patera pros ton trexonta kombo
-	// "\"" -> gia na egklioume tis akmes mesa se dipla eisagwgika giati dimioiurgountai parenergies otan iparxoyn mesa sta onoma twn kombwn
-	// "\"  -> gia na periklisoume me dipla eisagwgika to onoma tou komboy patera
-	// \""  -> gia to onoma tou trexonta kombou p akolouthei;
-	
-	// cout << parent->GetGraphvizLabel() << "\n";
-
+	// we print the link from father to the current node
+	// "\"" -> to enclose links in double quotes because we create side effects when they exist in the names of the nodes
+	// "\"  -> to request with double quotes the name of the parent node
+	// \""  -> for the name of the current node that follows
 	(*dotFile) << "\"" << parent->GetGraphvizLabel() << "\"->\"" << GetGraphvizLabel() << "\";\n";
 
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		//den orizoume postorder action ektos apo tin riza
+		//do not define postorder action except from the root
 		(*it)->Visit_SyntaxTreePrinter(dotFile, this);
-		
 	}
 }
 
 bool flag_1 = true;
-void STNode::Visit_FactorizedTree(list<STNode*> *node, ofstream* factfile, STNode* parent, STNode* common_factor) {
+void STNode::Visit_FactorizedTree(list<STNode*>* node, ofstream* factfile, STNode* parent, int common_factor, list<int> all_nums) {
+	// === !!! CAUTION !!! ==========================================
+	// This function is a VERY beta version of printing the factorized tree.
+	// In main.cpp, I've put it in comments cause it's not ready.
+	// I was testing with WRONG inputs, just to check the output.
+	// Didn't delete just to show the effort ..
+	// ==============================================================
 	list<STNode*>::iterator it;
 	bool flag = true;
-	int eksw = 0;
+	int out = 0;
 	(*factfile) << "\"" << parent->GetGraphvizLabel() << "\"->\"" << GetGraphvizLabel() << "\";\n";
 	if (flag_1) {
 		for (it = m_children->begin(); it != m_children->end(); it++) {
 			if ((*it)->GetNodeType() != NT_EXPRESSION_ADDITION) {
-				eksw++;
-				(*it)->Visit_FactorizedTree(node, factfile, this, common_factor);
+				out++;
+				(*it)->Visit_FactorizedTree(node, factfile, this, common_factor, all_nums);
 				flag_1 = false;
 			}
 		}
 	}
 	list<STNode*>::iterator po = m_children->begin();
 
-	if (eksw >= 1) {
+	if (out >= 1) {
 		list<STNode*>::iterator ite = node->begin();
 		(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << "MULTIPLICATION_X" << "\";\n";
-		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << common_factor->GetGraphvizLabel() << "\";\n";
+		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << "NUMBER_0_" << common_factor << "\";\n";
 		(*factfile) << "\"" << "MULTIPLICATION_X" << "\"->\"" << (*ite)->GetGraphvizLabel() << "\";\n";
 
-		list<STNode*>::iterator paidi = node->begin();
+		list<STNode*>::iterator child = node->begin();
 		string str1, str2;
-		cout << "EE " << (*paidi)->GetGraphvizLabel() << "GEIA " << endl;
-	
-		for (po = node->begin(); po != node->end(); po++) { 
-			str1 = (*ite)->GetChild(0)->GetChild(0)->GetGraphvizLabel();
-			str2 = (*ite)->GetChild(1)->GetChild(0)->GetGraphvizLabel();
-		
-			cout << str2;
-			if (str1 == common_factor->GetGraphvizLabel()) {
-				str1 = (*ite)->GetChild(0)->GetChild(1)->GetGraphvizLabel();
-			}
-			if(str2 == common_factor->GetGraphvizLabel()) {
-				str2 = (*ite)->GetChild(1)->GetChild(1)->GetGraphvizLabel();
-			}
-			if (po != node->end()) {
-				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << str1 << "\";\n";
-				(*factfile) << "\"" << (*po)->GetGraphvizLabel() << "\"->\"" << str2 << "\";\n";
-			}
+		int count = 14;
+		for (auto const& i : all_nums) {
+			(*factfile) << "\"" << "ADDITION_" << count << "\"->\"" << "NUMBER_" << count << "_" << i << "\";\n";
+			count++;
 		}
-		eksw = 0;
+		out = 0;
 	}
 
 }
 
 int STNode::Visit_Eval() {
-	// eksasfalizei tin diasxisei tou sintaktikou dentroy gia opoion kombo efarmozetai i methodos
-
 	list<STNode*>::iterator it;
+	int p;
 
-	// diatrexei ta paidia tou komboy
-	int nai;
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		nai = (*it)->Visit_Eval();
+		p = (*it)->Visit_Eval();
 	}
-	return nai;
+	return p;
 }
 
 list<STNode*> STNode::SearchingAddition(list<STNode*> a) {
 	list<STNode*>::iterator it;
-	list<STNode*> piip;
+	list<STNode*> p;
 
-	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip=(*it)->SearchingAddition(a);
+		p = (*it)->SearchingAddition(a);
 	}
-	return piip;
+	return p;
 }
 
 list<STNode*> STNode::SearchingMultiplications(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it;
-	list<STNode*> piip;
+	list<STNode*> p;
 
-	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip = (*it)->SearchingMultiplications(a,b);
+		p = (*it)->SearchingMultiplications(a,b);
 	}
-	return piip;
+	return p;
 }
 
 list<int> STNode::CommonFactor(list<STNode*> a, list<STNode*> b) {
 	list<STNode*>::iterator it;
-	list<int> piip;
+	list<int> p;
 
-	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip=  (*it)->CommonFactor(a,b) ;
+		p = (*it)->CommonFactor(a,b) ;
 	}
-	return piip;
+	return p;
 }
 
 list<int> STNode::FindingNums(list<STNode*> a, list<STNode*> b , int c) {
 	list<STNode*>::iterator it;
-	list<int> piip;
+	list<int> p;
 
-	// diatrexei ta paidia tou komboy
 	for (it = m_children->begin(); it != m_children->end(); it++) {
-		piip = (*it)->FindingNums(a,b,c);
+		p = (*it)->FindingNums(a,b,c);
 	}
-	return piip;
+	return p;
 }
 
 NodeType STNode::GetNodeType() {
-	// epistrefoun tipo kombou kai etiketas tou
-
 	return m_nodeType;
 }
 
